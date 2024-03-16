@@ -1,0 +1,7 @@
+
+# Assuming X_test_scaled and y_test are lists or arrays
+length_X_test = len(X_test_scaled)
+length_y_test = len(y_test)
+
+print(f"Length of X_test_scaled: {length_X_test}")
+print(f"Length of y_test: {length_y_test}")

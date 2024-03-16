@@ -1,0 +1,167 @@
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import pyodbc
+
+
+# Establish a connection to your SQL Server database
+#conn = pyodbc.connect("Driver={SQL Server Native Client 11.0};"
+                     #"Server=Nima;"
+                     # "Database=HousePrices_Istanbul;"
+                     # "Trusted_Connection=yes;")
+
+SERVER = 'Nima'
+DATABASE = 'HousePrices_Istanbul'
+USERNAME = 'Nimaeb'
+PASSWORD = 'Nima@1378'
+
+connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD}'
+conn = pyodbc.connect(connectionString)
+# Execute the query and fetch the data
+cursor = conn.cursor()
+cursor.execute('SELECT Number_of_Rooms FROM New_House_Prices')
+data_array = []
+
+# Iterate over the result set and store the data into the array
+for row in cursor:
+    data_array.append(row)
+
+# Close the cursor and connection
+cursor.close()
+conn.close()
+
+# Now, you have your data stored in the data_array
+print(data_array)
+
+# Continue with the rest of your code...
+
+
+# Define the features (X) and labels (y) as NumPy arrays
+#X = np.array([130, 70, 100, 100, 110, 120, 130, 155, 235, 650, 685])
+#y = np.array([3300000, 4200000, 4250000, 10500000, 9950000, 6600000, 18000000, 4650000, 34500000, 52000000, 16500000])
+
+X = np.array([130, 70, 100, 100, 110, 120, 130, 155])
+y = np.array([3300000, 4200000, 4250000, 10500000, 9950000, 6600000, 18000000, 4650000])
+
+# Reshape X to a 2D array (required for sklearn)
+X = X.reshape(-1, 1)
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature Scaling (Standardization)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Number of features
+n_features = X_train_scaled.shape[1]
+
+# Initialize parameters
+theta = np.zeros((n_features, 1))
+
+def compute_cost(X, y, theta):
+    m = len(y)
+    predictions = np.dot(X, theta)
+    error = predictions - y
+    cost = (1 / (2 * m)) * np.sum(error ** 2)
+    return cost
+
+def compute_gradient(X, y, theta):
+    m = len(y)
+    predictions = np.dot(X, theta)
+    error = predictions - y
+    gradient = (1 / m) * np.dot(X.T, error)
+    return gradient
+
+def update_parameters(theta, gradient, learning_rate):
+    new_theta = theta - learning_rate * gradient
+    return new_theta
+
+# Training Loop
+num_iterations = 10000
+learning_rate =  0.00001
+
+for i in range(num_iterations):
+    # Compute gradient
+    gradient = compute_gradient(X_train, y_train, theta)
+    
+    # Update parameters
+    theta = update_parameters(theta, gradient, learning_rate)
+    
+    # Compute cost (optional - for monitoring)
+    cost = compute_cost(X_train, y_train, theta)
+    print(f"Iteration {i+1}, Cost: {cost}")
+
+# Trained parameters
+print("Trained Parameters (theta):")
+print(theta)
+
+# Evaluate the model on the test set (compute MSE)
+predictions_test = np.dot(X_test_scaled, theta)
+y_test_reshaped = y_test.reshape(-1, 1)  # Reshape y_test to match the shape of predictions_test
+mse_test = np.mean((predictions_test - y_test_reshaped) ** 2)
+print("Mean Squared Error on Test Set:", mse_test)
+
+import numpy as np
+import scipy.stats as stats
+
+X = np.array([130, 70, 100, 100, 110, 120, 130, 155])
+y = np.array([3300000, 4200000, 4250000, 10500000, 9950000, 6600000, 18000000, 4650000])
+
+# Calculate linear regression parameters (slope and intercept)
+slope, intercept = np.polyfit(X, y, 1)
+
+print(f"Linear Regression: y = {slope} * x + {intercept}")
+
+# Calculate normal distribution parameters (mean and standard deviation) for X
+mu_X, std_X = stats.norm.fit(X)
+print(f"Normal Distribution for X: Mean = {mu_X}, Standard Deviation = {std_X}")
+
+# Calculate normal distribution parameters (mean and standard deviation) for y
+mu_y, std_y = stats.norm.fit(y)
+print(f"Normal Distribution for y: Mean = {mu_y}, Standard Deviation = {std_y}")
+
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+X = np.array([130, 70, 100, 100, 110, 120, 130, 155])
+y = np.array([3300000, 4200000, 4250000, 10500000, 9950000, 6600000, 18000000, 4650000])
+
+# Parameters of the normal distribution for X
+mu_X = 114.375
+std_X = 23.905739373631597
+
+# Parameters of the normal distribution for y
+mu_y = 7681250.0
+std_y = 4650466.206467906
+
+# Generate a range of x values
+x_values_X = np.linspace(min(X), max(X), 100)
+x_values_y = np.linspace(min(y), max(y), 100)
+
+# Generate the y values for the normal distributions
+y_values_X = norm.pdf(x_values_X, mu_X, std_X)
+y_values_y = norm.pdf(x_values_y, mu_y, std_y)
+
+# Plot the normal distributions
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)
+plt.plot(x_values_X, y_values_X)
+plt.title('Normal Distribution for X')
+plt.xlabel('X')
+plt.ylabel('Probability Density')
+
+plt.subplot(1, 2, 2)
+plt.plot(x_values_y, y_values_y)
+plt.title('Normal Distribution for y')
+plt.xlabel('y')
+plt.ylabel('Probability Density')
+
+plt.tight_layout()
+plt.show()

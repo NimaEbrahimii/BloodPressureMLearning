@@ -1,0 +1,39 @@
+import pyodbc
+
+p_dr=pyodbc.drivers()
+print(p_dr)
+
+
+import pyodbc
+
+
+# Establish a connection to your SQL Server database
+#conn = pyodbc.connect("Driver={SQL Server Native Client 11.0};"
+                     #"Server=Nima;"
+                     # "Database=HousePrices_Istanbul;"
+                     # "Trusted_Connection=yes;")
+
+SERVER = 'Nima'
+DATABASE = 'HousePrices_Istanbul'
+USERNAME = 'Nimaeb'
+PASSWORD = 'Nima@1378'
+
+connectionString = "driver={ODBC Driver 18 for SQL Server}; server=Nima; database=HousePrices_Istanbul ; trusted_connection=YES;"
+conn = pyodbc.connect(connectionString)
+# Execute the query and fetch the data
+cursor = conn.cursor()
+cursor.execute('SELECT Number_of_Rooms FROM New_House_Prices')
+data_array = []
+
+# Iterate over the result set and store the data into the array
+for row in cursor:
+    data_array.append(row)
+
+# Close the cursor and connection
+cursor.close()
+conn.close()
+
+# Now, you have your data stored in the data_array
+print(data_array)
+
+# Continue with the rest of your code...

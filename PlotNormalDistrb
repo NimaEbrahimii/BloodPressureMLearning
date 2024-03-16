@@ -1,0 +1,25 @@
+# Generate a range of x values
+x_values_X = np.linspace(min(X), max(X), 100)
+x_values_y = np.linspace(min(y), max(y), 100)
+
+# Generate the y values for the normal distributions
+y_values_X = norm.pdf(x_values_X, mu_X, std_X)
+y_values_y = norm.pdf(x_values_y, mu_y, std_y)
+
+# Plot the normal distributions
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)
+plt.plot(x_values_X, y_values_X)
+plt.title('Normal Distribution for X')
+plt.xlabel('X')
+plt.ylabel('Probability Density')
+
+plt.subplot(1, 2, 2)
+plt.plot(x_values_y, y_values_y)
+plt.title('Normal Distribution for y')
+plt.xlabel('y')
+plt.ylabel('Probability Density')
+
+plt.tight_layout()
+plt.show()
